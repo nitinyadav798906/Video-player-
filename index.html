@@ -3,29 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Video.js Player</title>
+  <title>Video.js Player with Quality Selector</title>
   <link href="https://vjs.zencdn.net/8.22.0/video-js.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+    input {
+      padding: 10px;
+      width: 60%;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    video {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>My Video.js Player</h1>
+
+  <h1>Paste Video URL</h1>
+  <input
+    type="text"
+    id="videoURL"
+    placeholder="Enter video URL (mp4, m3u8, etc)"
+    onchange="loadVideo()"
+  />
+
   <video
     id="my-video"
-    class="video-js"
+    class="video-js vjs-default-skin"
     controls
+    autoplay
     preload="auto"
     width="640"
     height="264"
-    poster="https://example.com/poster.jpg"
     data-setup="{}"
   >
-    <source src="https://d1q5ugnejk3zoi.cloudfront.net/transcoded/krAEC9f7acN/video.m3u8" type="video/mp4" />
-    <p class="vjs-no-js">
-      To view this video please enable JavaScript, and consider upgrading to a
-      web browser that
-      <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-    </p>
+    <source id="video-source" src="" type="video/mp4" />
+    Your browser does not support the video tag.
   </video>
 
   <script src="https://vjs.zencdn.net/8.22.0/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-quality-levels@2.0.9/dist/videojs-contrib-quality-levels.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-http-source-selector@1.1.6/dist/videojs-http-source-selector.min.js"></script>
+  <script>
+    const player = videojs('my-video');
+    player.httpSourceSelector();
+
+    function loadVideo() {
+      const url = document.getElementById('videoURL').value;
+      const source = document.getElementById('video-source');
+      source.src = url;
+
+      // Set MIME type if needed
+      if (url.endsWith('.m3u8')) {
+        source.type = 'application/x-mpegURL';
+      } else if (url.endsWith('.mpd')) {
+        source.type = 'application/dash+xml';
+      } else {
+        source.type = 'video/mp4';
+      }
+
+      player.src({ src: url, type: source.type });
+      player.play();
+    }
+  </script>
+
 </body>
 </html>
