@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Video.js Player with URL & Quality</title>
+  <meta charset="UTF-8">
+  <title>Video.js Player with URL Input</title>
   <link href="https://vjs.zencdn.net/8.22.0/video-js.css" rel="stylesheet" />
   <style>
     body {
@@ -24,27 +23,25 @@
 </head>
 <body>
 
-  <h1>Paste Video URL</h1>
+  <h2>Paste Video URL</h2>
   <input
     type="text"
     id="videoURL"
-    placeholder="Enter video URL (mp4, m3u8, etc)"
-    onchange="loadVideo()"
+    placeholder="Enter .mp4 or .m3u8 video URL"
   />
+  <button onclick="loadVideo()">Play</button>
 
   <video
     id="my-video"
     class="video-js vjs-default-skin"
     controls
-    autoplay
     muted
+    autoplay
     preload="auto"
     width="640"
     height="360"
-    data-setup="{}"
+    data-setup='{}'
   >
-    <source id="video-source" src="" type="video/mp4" />
-    Your browser does not support the video tag.
   </video>
 
   <script src="https://vjs.zencdn.net/8.22.0/video.min.js"></script>
@@ -53,21 +50,23 @@
 
   <script>
     const player = videojs('my-video');
-    player.httpSourceSelector({ default: 'auto' });
+    player.httpSourceSelector();
 
     function loadVideo() {
-      const url = document.getElementById('videoURL').value.trim();
-      let type = 'video/mp4';
+      const url = document.getElementById("videoURL").value.trim();
+      if (!url) return;
 
-      if (url.endsWith('.m3u8')) {
-        type = 'application/x-mpegURL';
-      } else if (url.endsWith('.mpd')) {
-        type = 'application/dash+xml';
+      let type = "video/mp4";
+      if (url.endsWith(".m3u8")) {
+        type = "application/x-mpegURL";
+      } else if (url.endsWith(".mpd")) {
+        type = "application/dash+xml";
       }
 
       player.src({ src: url, type });
-      player.load();
-      player.play();
+      player.ready(() => {
+        player.play();
+      });
     }
   </script>
 
