@@ -1,356 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{file_name_without_extension}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-    <style>
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title International study organization Video Player with Quality & URL Input</title>
+<!-- Video.js CSS -->
+<link href="https://vjs.zencdn.net/7.22.1/video-js.css" rel="stylesheet" />
 
-        body {{
-            background: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-        }}
+<!-- Video.js Quality Selector CSS -->
+<link href="https://cdn.jsdelivr.net/npm/videojs-http-source-selector@1.1.5/dist/videojs-http-source-selector.css" rel="stylesheet" />
 
-        .header {{
-            background: #1c1c1c;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }}
+<style>
+  body {
+    background-color: #121212;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+    margin: 0;
+  }
 
-        .subheading {{
-            font-size: 16px;
-            margin-top: 10px;
-            color: #ccc;
-            font-weight: normal;
-        }}
+  h1 {
+    margin-bottom: 1rem;
+    color: #00afff;
+    text-align: center;
+    user-select: none;
+  }
 
-        .subheading a {{
-            color: #ffeb3b;
-            text-decoration: none;
-            font-weight: bold;
-        }}
+  .container {
+    max-width: 800px;
+    width: 100%;
+  }
 
-        #video-player {{
-            margin: 20px auto;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background: #1c1c1c;
-            padding: 10px;
-        }}
+  .url-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
 
-        #url-input-container {{
-            display: none;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-        }}
+  input[type="text"] {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+    font-family: inherit;
+  }
 
-        #url-input-container input {{
-            width: 70%;
-            padding: 10px;
-            border: 2px solid #007bff;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-right: 10px;
-        }}
+  input[type="text"]:focus {
+    outline: 2px solid #00afff;
+  }
 
-        #url-input-container button {{
-            width: 25%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }}
+  button {
+    background-color: #00afff;
+    color: #121212;
+    border: none;
+    padding: 0 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
 
-        #url-input-container button:hover {{
-            background: #0056b3;
-        }}
+  button:hover {
+    background-color: #008ecc;
+  }
 
-        .search-bar {{
-            margin: 20px auto;
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-        }}
+  /* Video.js overrides for dark theme */
+  .video-js {
+    width: 100% !important;
+    height: 450px !important;
+    border-radius: 8px;
+    background-color: #000;
+  }
 
-        .search-bar input {{
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #007bff;
-            border-radius: 5px;
-            font-size: 16px;
-        }}
+  /* Hide default big play button, use custom below */
+  .vjs-big-play-button {
+    background-color: #00afff !important;
+    border: none !important;
+    box-shadow: 0 0 8px #00afff !important;
+    border-radius: 50% !important;
+    width: 60px !important;
+    height: 60px !important;
+    line-height: 60px !important;
+    font-size: 2rem !important;
+    top: 50% !important;
+    left: 50% !important;
+    margin-left: -30px !important; 
+    margin-top: -30px !important;
+    cursor: pointer !important;
+  }
 
-        .no-results {{
-            color: red;
-            font-weight: bold;
-            margin-top: 20px;
-            text-align: center;
-            display: none;
-        }}
+  /* Quality selector style overrides */
+  .vjs-http-source-selector {
+    color: #00afff;
+  }
+</style>
 
-        .container {{
-            display: flex;
-            justify-content: space-around;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 800px;
-        }}
-
-        .tab {{
-            flex: 1;
-            padding: 15px;
-            background: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            margin: 0 5px;
-        }}
-
-        .tab:hover {{
-            background: #007bff;
-            color: white;
-            transform: translateY(-5px);
-        }}
-
-        .content {{
-            display: none;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 800px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }}
-
-        .content h2 {{
-            font-size: 22px;
-            margin-bottom: 15px;
-            color: #007bff;
-        }}
-
-        .video-list, .pdf-list, .other-list {{
-            text-align: left;
-        }}
-
-        .video-list a, .pdf-list a, .other-list a {{
-            display: block;
-            padding: 10px;
-            background: #f5f7fa;
-            margin: 5px 0;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }}
-
-        .video-list a:hover, .pdf-list a:hover, .other-list a:hover {{
-            background: #007bff;
-            color: white;
-            transform: translateX(10px);
-        }}
-
-        .footer {{
-            margin-top: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 15px;
-            background: #1c1c1c;
-            color: white;
-            text-align: center;
-            border-radius: 10px;
-        }}
-
-        .footer a {{
-            color: #ffeb3b;
-            text-decoration: none;
-            font-weight: bold;
-        }}
-    </style>
 </head>
 <body>
-    <div class="header">
-        {file_name_without_extension}
-        <div class="subheading">📥 Extracted By: <a href="https://t.me/gjskisb" target="_blank">Sachin yadav Nitin yadav™</a></div>
-    </div>
 
-    <div id="video-player">
-        <video id="engineer-babu-player" class="video-js vjs-default-skin" controls preload="auto" width="640" height="360">
-            <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-            </p>
-        </video>
-    </div>
+<h1>Universal Video Player</h1>
 
-    <div id="url-input-container">
-        <input type="text" id="url-input" placeholder="Enter video URL to play...">
-        <button onclick="playCustomUrl()">Play</button>
-    </div>
+<div class="container">
 
-    <button onclick="toggleUrlInput()" style="margin: 20px auto; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; display: block; width: 90%; max-width: 600px;">Enter Custom URL</button>
+  <div class="url-input-wrapper">
+    <input
+      type="text"
+      id="video-url"
+      placeholder="Paste video URL here (mp4, m3u8, mpd, etc.)"
+      spellcheck="false"
+      autocomplete="off"
+    />
+    <button id="load-btn" aria-label="Load video">Play ▶️</button>
+  </div>
 
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search for videos, PDFs, or other resources..." oninput="filterContent()">
-    </div>
+  <video
+    id="my-video"
+    class="video-js vjs-default-skin"
+    controls
+    preload="auto"
+    data-setup='{}'
+  >
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank"
+        >supports HTML5 video</a
+      >
+    </p>
+  </video>
+</div>
 
-    <div id="noResults" class="no-results">No results found.</div>
+<!-- Video.js JS -->
+<script src="https://vjs.zencdn.net/7.22.1/video.min.js"></script>
 
-    <div class="container">
-        <div class="tab" onclick="showContent('videos')">Videos</div>
-        <div class="tab" onclick="showContent('pdfs')">PDFs</div>
-        <div class="tab" onclick="showContent('others')">Others</div>
-    </div>
+<!-- Video.js HTTP Source Selector plugin for quality switching -->
+<script src="https://cdn.jsdelivr.net/npm/videojs-http-source-selector@1.1.5/dist/videojs-http-source-selector.min.js"></script>
 
-    <div id="videos" class="content">
-        <h2>All Video Lectures</h2>
-        <div class="video-list">
-            {video_links}
-        </div>
-    </div>
+<script>
+  const player = videojs("my-video");
 
-    <div id="pdfs" class="content">
-        <h2>All PDFs</h2>
-        <div class="pdf-list">
-            {pdf_links}
-        </div>
-    </div>
+  // Initialize the http source selector plugin
+  player.httpSourceSelector({
+    default: "auto",
+  });
 
-    <div id="others" class="content">
-        <h2>Other Resources</h2>
-        <div class="other-list">
-            {other_links}
-        </div>
-    </div>
+  // Enable quality selector if the source is adaptive
+  player.ready(function () {
+    // Enable the quality selector button only if available
+    const tech = player.tech({ IWillNotUseThisInPlugins: true });
+    if (tech) {
+      tech.on("loadedmetadata", () => {
+        player.httpSourceSelector().updateVisibility();
+      });
+    }
+  });
 
-    <div class="footer">Extracted By - <a href="https://t.me/raftaar_don" target="_blank">sachin yadav nitin yadav</a></div>
+  // Handle Play button logic: load and play the video from URL input
+  const loadBtn = document.getElementById("load-btn");
+  const urlInput = document.getElementById("video-url");
 
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script>
-        const player = videojs('engineer-babu-player', {{
-            controls: true,
-            autoplay: false,
-            preload: 'auto',
-            fluid: true,
-            controlBar: {{
-                children: [
-                    'playToggle',
-                    'volumePanel',
-                    'currentTimeDisplay',
-                    'timeDivider',
-                    'durationDisplay',
-                    'progressControl',
-                    'liveDisplay',
-                    'remainingTimeDisplay',
-                    'customControlSpacer',
-                    'playbackRateMenuButton',
-                    'chaptersButton',
-                    'descriptionsButton',
-                    'subsCapsButton',
-                    'audioTrackButton',
-                    'fullscreenToggle'
-                ]
-            }}
-        }});
+  function loadAndPlay(url) {
+    if (!url) {
+      alert("Please enter a video URL.");
+      return;
+    }
 
-        function playVideo(url) {{
-            if (url.includes('.m3u8')) {{
-                document.getElementById('video-player').style.display = 'block';
-                player.src({{ src: url, type: 'application/x-mpegURL' }});
-                player.play().catch(() => {{
-                    window.open(url, '_blank');
-                }});
-            }} else {{
-                window.open(url, '_blank');
-            }}
-        }}
+    // Reset player source
+    player.pause();
+    player.src({ src: url });
 
-        function toggleUrlInput() {{
-            const urlInputContainer = document.getElementById('url-input-container');
-            urlInputContainer.style.display = urlInputContainer.style.display === 'none' ? 'block' : 'none';
-        }}
+    // Load and autoplay
+    player.ready(() => {
+      player.load();
+      player.play().catch((err) => {
+        // Autoplay might be blocked by browser, user can click play button
+        console.warn("Autoplay prevented:", err);
+      });
+    });
+  }
 
-        function playCustomUrl() {{
-            const url = document.getElementById('url-input').value;
-            if (url) {{
-                playVideo(url);
-            }}
-        }}
+  loadBtn.addEventListener("click", () => {
+    loadAndPlay(urlInput.value.trim());
+  });
 
-        function showContent(tabName) {{
-            const contents = document.querySelectorAll('.content');
-            contents.forEach(content => {{
-                content.style.display = 'none';
-            }});
-            const selectedContent = document.getElementById(tabName);
-            if (selectedContent) {{
-                selectedContent.style.display = 'block';
-            }}
-            filterContent();
-        }}
+  // Optional: Enter key loads video
+  urlInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      loadAndPlay(urlInput.value.trim());
+    }
+  });
 
-        function filterContent() {{
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const categories = ['videos', 'pdfs', 'others'];
-            let hasResults = false;
+  // Default example video on load (optional)
+  const defaultUrl =
+    "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"; // example HLS stream
+  urlInput.value = defaultUrl;
+  loadAndPlay(defaultUrl);
+</script>
 
-            categories.forEach(category => {{
-                const items = document.querySelectorAll(`#${{category}} .${{category}}-list a`);
-                let categoryHasResults = false;
-
-                items.forEach(item => {{
-                    const itemText = item.textContent.toLowerCase();
-                    if (itemText.includes(searchTerm)) {{
-                        item.style.display = 'block';
-                        categoryHasResults = true;
-                        hasResults = true;
-                    }} else {{
-                        item.style.display = 'none';
-                    }}
-                }});
-
-                const categoryHeading = document.querySelector(`#${{category}} h2`);
-                if (categoryHeading) {{
-                    categoryHeading.style.display = categoryHasResults ? 'block' : 'none';
-                }}
-            }});
-
-            const noResultsMessage = document.getElementById('noResults');
-            if (noResultsMessage) {{
-                noResultsMessage.style.display = hasResults ? 'none' : 'block';
-            }}
-        }}
-
-        document.addEventListener('DOMContentLoaded', () => {{
-            showContent('videos');
-        }});
-    </script>
 </body>
 </html>
+
