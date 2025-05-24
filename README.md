@@ -1,1 +1,1 @@
-# Video-player-
+# Videojs-player
