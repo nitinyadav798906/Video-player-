@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>sky Player</title>
+    <title>m3u8 Player</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest" /></script>
     <style type="text/css">
       body {
@@ -28,12 +28,12 @@
   <body>
     <div class="player-type-form">
       <label><input type="radio" name="player-type" value="hls-js" checked>hls.js</label>
-      <label><input type="radio" name="player-type" value="m3u8">m3u8</label>
+      <label><input type="radio" name="player-type" value="safari">safari</label>
     </div>
     <div class="url-form">
       <label for="url">URL : </label>
       <input type="text" id="url" name="url" />
-      <input type="button" id="load-button" value="chal ja" onclick="onClickLoad()" />
+      <input type="button" id="load-button" value="Load" onclick="onClickLoad()" />
       <input type="button" id="clear-button" value="Clear" onclick="onClickClear()" />
       <input type="button" id="copy-button" value="Copy" onclick="onClickCopy()" />
     </div>
