@@ -46,6 +46,7 @@
       const newVideo = document.createElement("video");
       newVideo.id = "video";
       newVideo.controls = true;
+      newVideo.setAttribute("playsinline", "true"); // for iOS support
       document.body.appendChild(newVideo);
 
       const url = document.getElementById('url').value;
@@ -56,8 +57,21 @@
         const hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(newVideo);
+
+        if (autostart) {
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            newVideo.play();
+          });
+        }
       } else if (playerType === "safari") {
         newVideo.src = url;
+        if (autostart) {
+          newVideo.play();
+        }
+      }
+
+      if (fullscreen) {
+        newVideo.requestFullscreen().catch(err => console.warn("Fullscreen error:", err));
       }
     }
 
@@ -71,9 +85,11 @@
       document.execCommand("copy");
     }
 
-    // ✅ Handle ?video= parameter
+    // ✅ Parse Query Params
     const params = new URLSearchParams(window.location.search);
     const videoURL = params.get("video");
+    const autostart = params.get("autostart") === "1";
+    const fullscreen = params.get("fullscreen") === "1";
 
     if (videoURL) {
       document.getElementById('url').value = decodeURIComponent(videoURL);
